@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+  metabase:
+    image: metabase/metabase
+    ports:
+      - 3333:3000
+    volumes:
+      - ./plugins/:/plugins
+
+  de-sprint-6:
+    image: cr.yandex/crp1r8pht0n0gl25aug1/de-sprint-6:latest
+    ports:
+      - 3000:3000
+      - 3002:3002
+      - 15432:5432
+    volumes:
+      - mydb:/var/lib/postgresql
+      - mylessons:/lessons
+      - ${AIRFLOW_DAGS_DIR:-./src}:/lessons
+    environment:
+      AIRFLOW_VAR_S3_FILES_LIST: "groups.csv,users.csv,dialogs.csv,group_log.csv"
+      AIRFLOW_VAR_INIT_CREATE_DDL_FILES_PATH: "/lessons/dags/init/create_ddl/"
+      AIRFLOW_VAR_INIT_DROP_DDL_FILES_PATH: "/lessons/dags/init/drop_ddl/"
+      AIRFLOW_VAR_STG_LOAD_DML_FILES_PATH: "/lessons/dags/stg/load_dml/"
+      AIRFLOW_VAR_DDS_LOAD_DML_FILES_PATH: "/lessons/dags/dds/load_dml/"
+      AIRFLOW_VAR_VERTIKA_HOST: "51.250.75.20"
+      AIRFLOW_VAR_VERTIKA_PORT: 5433
+      AIRFLOW_VAR_VERTIKA_USER: "stv2023081238"
+      AIRFLOW_VAR_VERTIKA_PASSWORD: "4uq4u6xewFwZAA2"
+      AIRFLOW_VAR_VERTIKA_DB: "dwh"
+    restart: unless-stopped
+
+volumes:
+  mydb:
+  mylessons:
